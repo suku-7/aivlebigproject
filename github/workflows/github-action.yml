@@ -1,0 +1,54 @@
+name: github-action
+run-name: ${{ github.actor }} is out building GitHub Actions
+
+on:
+  push:
+    # Pattern matched against refs/tags
+    tags:        
+      - '**' 
+
+jobs:
+  docker:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v2
+      
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+      
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Build Maven Projects
+        run: |
+          mvn clean package -f ./funeralcontext/pom.xml
+          mvn clean package -f ./funeralpython/pom.xml
+
+      - name: Docker Build and push for Funeralcontext
+        uses: docker/build-push-action@v4
+        with:
+          context: ./funeralcontext
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: |
+            ghcr.io/${{ github.repository }}/funeralcontext:latest
+            ghcr.io/${{ github.repository }}/funeralcontext:${{ github.ref_name }}
+            
+      - name: Docker Build and push for Funeralpython
+        uses: docker/build-push-action@v4
+        with:
+          context: ./funeralpython
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: |
+            ghcr.io/${{ github.repository }}/funeralpython:latest
+            ghcr.io/${{ github.repository }}/funeralpython:${{ github.ref_name }}
+            

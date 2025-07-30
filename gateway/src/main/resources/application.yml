@@ -1,0 +1,73 @@
+# ========================================
+# FILENAME: aivlebigproject/gateway/src/main/resources/application.yml
+# 역할 : 
+# ========================================
+
+server:
+  port: 8088
+
+---
+
+spring:
+  profiles: default
+  cloud:
+    gateway:
+#<<< API Gateway / Routes
+      routes:
+        - id: funeralcontext
+          uri: http://localhost:8082
+          predicates:
+            - Path=/customers/**, /funeralInfos/**, /obituaries/**, /deathReports/**, /schedules/**, 
+        - id: funeralpython
+          uri: http://localhost:8083
+          predicates:
+            - Path=/pythons/**, 
+        - id: frontend
+          uri: http://localhost:8080
+          predicates:
+            - Path=/**
+#>>> API Gateway / Routes
+      globalcors:
+        corsConfigurations:
+          '[/**]':
+            allowedOrigins:
+              - "*"
+            allowedMethods:
+              - "*"
+            allowedHeaders:
+              - "*"
+            allowCredentials: true
+
+
+---
+
+spring:
+  profiles: docker
+  cloud:
+    gateway:
+      routes:
+        - id: funeralcontext
+          uri: http://funeralcontext:8080
+          predicates:
+            - Path=/customers/**, /funeralInfos/**, /obituaries/**, /deathReports/**, /schedules/**, 
+        - id: funeralpython
+          uri: http://funeralpython:8080
+          predicates:
+            - Path=/pythons/**, 
+        - id: frontend
+          uri: http://frontend:8080
+          predicates:
+            - Path=/**
+      globalcors:
+        corsConfigurations:
+          '[/**]':
+            allowedOrigins:
+              - "*"
+            allowedMethods:
+              - "*"
+            allowedHeaders:
+              - "*"
+            allowCredentials: true
+
+server:
+  port: 8088
