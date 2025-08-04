@@ -25,34 +25,16 @@ public class Customer {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long customerId;
-
-    private String customerLoginId;
-
-    private String customerLoginPassword;
-
-    private String customerRole;
-
     private String customerName;
-
-    private String customerRrn;
-
     private Integer customerAge;
-
-    private String customerGender;
-
-    private String customerAddress;
-
-    private String customerEmail;
-
     private String customerPhone;
-
     private String customerJob;
-
-    private String customerHasChildren;
-
-    private String customerIsMarried;
-
-    private String customerDiseaseList;
+    private String customerAddress;
+    private String customerGender;
+    private Date customerBirthOfDate;
+    private Boolean customerHasChildren;
+    private Boolean customerIsMarried;
+    private String customerRrn;
 
     @PostPersist
     public void onPostPersist() {

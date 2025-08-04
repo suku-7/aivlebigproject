@@ -25,83 +25,54 @@ public class DeathReport {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long deathReportId;
-
     private Long funeralInfoId;
-
     private Long deathReportTemplateId;
-
-    private String deathReportFilePath;
-
+    private String deathReportFileName;
     private String deathReportFileUrl;
-
     private String deathReportStatus;
-
     private Date deathReportCreatedAt;
 
     private Long customerId;
-
-    private String customerName;
-
-    private String customerRrn;
-
-    private String customerPhone;
-
     private String deceasedName;
-
-    private Integer deceasedAge;
-
-    private Date deceasedDate;
-
-    private Date deceasedBirthOfDate;
-
-    private String deceasedGender;
-
     private String deceasedNameHanja;
-
     private String deceasedRrn;
-
+    private Integer deceasedAge;
+    private Date deceasedBirthOfDate;
+    private String deceasedGender;
+    private Date deceasedDate;
     private String deceasedReligion;
-
+    private String deceasedRegisteredAddress;
+    private String deceasedAddress;
     private String deceasedRelationToHouseholdHead;
-
     private Date reportRegistrationDate;
-
+    private String deathLocation;
+    private String deathLocationType;
+    private String deathLocationEtc;
+    private String deathReportEtc;
     private String reporterName;
-
     private String reporterRrn;
-
+    private String reporterQualification;
     private String reporterRelationToDeceased;
-
     private String reporterAddress;
-
     private String reporterPhone;
-
     private String reporterEmail;
-
     private String submitterName;
-
     private String submitterRrn;
-
     private String funeralCompanyName;
-
     private String directorName;
-
     private String directorPhone;
-
     private String funeralHomeName;
-
-    private String mortuaryInfo;
-
     private String funeralHomeAddress;
-
+    private String funeralHomeAddressUrl;
     private String funeralDuration;
-
+    private String mortuaryInfo;
     private String processionDateTime;
-
     private String burialSiteInfo;
-
     private String chiefMourners;
-
+    private String chiefMournersContact;
+    private String chiefMournerAccountHolder;
+    private String chiefMournerBankName;
+    private String chiefMournerAccountNumber;
     private String templateKeyword;
 
     public static DeathReportRepository repository() {
@@ -121,9 +92,6 @@ public class DeathReport {
         // 2. 이벤트로 받은 모든 데이터를 새로 만든 DeathReport 객체에 채워넣기
         deathReport.setFuneralInfoId(deathReportCreationRequested.getFuneralInfoId());
         deathReport.setCustomerId(deathReportCreationRequested.getCustomerId());
-        deathReport.setCustomerName(deathReportCreationRequested.getCustomerName());
-        deathReport.setCustomerRrn(deathReportCreationRequested.getCustomerRrn());
-        deathReport.setCustomerPhone(deathReportCreationRequested.getCustomerPhone());
         deathReport.setDeceasedName(deathReportCreationRequested.getDeceasedName());
         deathReport.setDeceasedNameHanja(deathReportCreationRequested.getDeceasedNameHanja());
         deathReport.setDeceasedRrn(deathReportCreationRequested.getDeceasedRrn());
@@ -133,13 +101,20 @@ public class DeathReport {
         deathReport.setDeceasedGender(deathReportCreationRequested.getDeceasedGender());
         deathReport.setDeceasedReligion(deathReportCreationRequested.getDeceasedReligion());
         deathReport.setDeceasedRelationToHouseholdHead(deathReportCreationRequested.getDeceasedRelationToHouseholdHead());
+        deathReport.setDeceasedRegisteredAddress(deathReportCreationRequested.getDeceasedRegisteredAddress());
+        deathReport.setDeceasedAddress(deathReportCreationRequested.getDeceasedAddress());
         deathReport.setReportRegistrationDate(deathReportCreationRequested.getReportRegistrationDate());
+        deathReport.setDeathLocation(deathReportCreationRequested.getDeathLocation());
+        deathReport.setDeathLocationType(deathReportCreationRequested.getDeathLocationType());
+        deathReport.setDeathLocationEtc(deathReportCreationRequested.getDeathLocationEtc());
+        deathReport.setDeathReportEtc(deathReportCreationRequested.getDeathReportEtc());
         deathReport.setReporterName(deathReportCreationRequested.getReporterName());
         deathReport.setReporterRrn(deathReportCreationRequested.getReporterRrn());
         deathReport.setReporterRelationToDeceased(deathReportCreationRequested.getReporterRelationToDeceased());
         deathReport.setReporterAddress(deathReportCreationRequested.getReporterAddress());
         deathReport.setReporterPhone(deathReportCreationRequested.getReporterPhone());
         deathReport.setReporterEmail(deathReportCreationRequested.getReporterEmail());
+        deathReport.setReporterQualification(deathReportCreationRequested.getReporterQualification());
         deathReport.setSubmitterName(deathReportCreationRequested.getSubmitterName());
         deathReport.setSubmitterRrn(deathReportCreationRequested.getSubmitterRrn());
         deathReport.setFuneralCompanyName(deathReportCreationRequested.getFuneralCompanyName());
@@ -151,7 +126,12 @@ public class DeathReport {
         deathReport.setFuneralDuration(deathReportCreationRequested.getFuneralDuration());
         deathReport.setProcessionDateTime(deathReportCreationRequested.getProcessionDateTime());
         deathReport.setBurialSiteInfo(deathReportCreationRequested.getBurialSiteInfo());
+        deathReport.setFuneralHomeAddressUrl(deathReportCreationRequested.getFuneralHomeAddressUrl());
         deathReport.setChiefMourners(deathReportCreationRequested.getChiefMourners());
+        deathReport.setChiefMournersContact(deathReportCreationRequested.getChiefMournersContact());
+        deathReport.setChiefMournerAccountHolder(deathReportCreationRequested.getChiefMournerAccountHolder());
+        deathReport.setChiefMournerBankName(deathReportCreationRequested.getChiefMournerBankName());
+        deathReport.setChiefMournerAccountNumber(deathReportCreationRequested.getChiefMournerAccountNumber());
         deathReport.setTemplateKeyword(deathReportCreationRequested.getTemplateKeyword());
 
         // 초기 상태 및 생성일자 설정
@@ -178,9 +158,6 @@ public class DeathReport {
         // 2. 이벤트로 받은 모든 데이터를 새로 만든 DeathReport 객체에 채워넣기
         deathReport.setFuneralInfoId(allDocumentsCreationRequested.getFuneralInfoId());
         deathReport.setCustomerId(allDocumentsCreationRequested.getCustomerId());
-        deathReport.setCustomerName(allDocumentsCreationRequested.getCustomerName());
-        deathReport.setCustomerRrn(allDocumentsCreationRequested.getCustomerRrn());
-        deathReport.setCustomerPhone(allDocumentsCreationRequested.getCustomerPhone());
         deathReport.setDeceasedName(allDocumentsCreationRequested.getDeceasedName());
         deathReport.setDeceasedNameHanja(allDocumentsCreationRequested.getDeceasedNameHanja());
         deathReport.setDeceasedRrn(allDocumentsCreationRequested.getDeceasedRrn());
@@ -190,13 +167,20 @@ public class DeathReport {
         deathReport.setDeceasedGender(allDocumentsCreationRequested.getDeceasedGender());
         deathReport.setDeceasedReligion(allDocumentsCreationRequested.getDeceasedReligion());
         deathReport.setDeceasedRelationToHouseholdHead(allDocumentsCreationRequested.getDeceasedRelationToHouseholdHead());
+        deathReport.setDeceasedRegisteredAddress(allDocumentsCreationRequested.getDeceasedRegisteredAddress());
+        deathReport.setDeceasedAddress(allDocumentsCreationRequested.getDeceasedAddress());
         deathReport.setReportRegistrationDate(allDocumentsCreationRequested.getReportRegistrationDate());
+        deathReport.setDeathLocation(allDocumentsCreationRequested.getDeathLocation());
+        deathReport.setDeathLocationType(allDocumentsCreationRequested.getDeathLocationType());
+        deathReport.setDeathLocationEtc(allDocumentsCreationRequested.getDeathLocationEtc());
+        deathReport.setDeathReportEtc(allDocumentsCreationRequested.getDeathReportEtc());
         deathReport.setReporterName(allDocumentsCreationRequested.getReporterName());
         deathReport.setReporterRrn(allDocumentsCreationRequested.getReporterRrn());
         deathReport.setReporterRelationToDeceased(allDocumentsCreationRequested.getReporterRelationToDeceased());
         deathReport.setReporterAddress(allDocumentsCreationRequested.getReporterAddress());
         deathReport.setReporterPhone(allDocumentsCreationRequested.getReporterPhone());
         deathReport.setReporterEmail(allDocumentsCreationRequested.getReporterEmail());
+        deathReport.setReporterQualification(allDocumentsCreationRequested.getReporterQualification());
         deathReport.setSubmitterName(allDocumentsCreationRequested.getSubmitterName());
         deathReport.setSubmitterRrn(allDocumentsCreationRequested.getSubmitterRrn());
         deathReport.setFuneralCompanyName(allDocumentsCreationRequested.getFuneralCompanyName());
@@ -208,7 +192,12 @@ public class DeathReport {
         deathReport.setFuneralDuration(allDocumentsCreationRequested.getFuneralDuration());
         deathReport.setProcessionDateTime(allDocumentsCreationRequested.getProcessionDateTime());
         deathReport.setBurialSiteInfo(allDocumentsCreationRequested.getBurialSiteInfo());
+        deathReport.setFuneralHomeAddressUrl(allDocumentsCreationRequested.getFuneralHomeAddressUrl());
         deathReport.setChiefMourners(allDocumentsCreationRequested.getChiefMourners());
+        deathReport.setChiefMournersContact(allDocumentsCreationRequested.getChiefMournersContact());
+        deathReport.setChiefMournerAccountHolder(allDocumentsCreationRequested.getChiefMournerAccountHolder());
+        deathReport.setChiefMournerBankName(allDocumentsCreationRequested.getChiefMournerBankName());
+        deathReport.setChiefMournerAccountNumber(allDocumentsCreationRequested.getChiefMournerAccountNumber());
         deathReport.setTemplateKeyword(allDocumentsCreationRequested.getTemplateKeyword());
 
         // 초기 상태 및 생성일자 설정
@@ -231,14 +220,14 @@ public class DeathReport {
         repository().findById(deathReportDocumentGenerated.getDeathReportId()).ifPresent(deathReport->{
             
             // 2. 찾은 데이터의 필드 값을 이벤트로 받은 정보로 업데이트합니다.
-            deathReport.setDeathReportFilePath(deathReportDocumentGenerated.getDeathReportFilePath());
+            deathReport.setDeathReportFileName(deathReportDocumentGenerated.getDeathReportFileName()); // [수정] FilePath -> FileName
             deathReport.setDeathReportFileUrl(deathReportDocumentGenerated.getDeathReportFileUrl());
             deathReport.setDeathReportStatus(deathReportDocumentGenerated.getDeathReportStatus());
             
             // 3. 변경된 내용을 DB에 다시 저장합니다.
             repository().save(deathReport);
 
-         });
+        });
     }
     //>>> Clean Arch / Port Method
 }

@@ -25,83 +25,56 @@ public class Schedule {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long scheduleId;
-
     private Long funeralInfoId;
-
     private Long scheduleTemplateId;
-
-    private String scheduleFilePath;
-
+    private String scheduleDallePrompt;
+    private String scheduleDalleTemplateImageUrl;
+    private String scheduleFileName;
     private String scheduleFileUrl;
-
     private String scheduleStatus;
-
     private Date scheduleCreatedAt;
 
     private Long customerId;
-
-    private String customerName;
-
-    private String customerRrn;
-
-    private String customerPhone;
-
     private String deceasedName;
-
-    private Integer deceasedAge;
-
-    private Date deceasedDate;
-
-    private Date deceasedBirthOfDate;
-
-    private String deceasedGender;
-
     private String deceasedNameHanja;
-
     private String deceasedRrn;
-
+    private Integer deceasedAge;
+    private Date deceasedBirthOfDate;
+    private String deceasedGender;
+    private Date deceasedDate;
     private String deceasedReligion;
-
+    private String deceasedRegisteredAddress;
+    private String deceasedAddress;
     private String deceasedRelationToHouseholdHead;
-
     private Date reportRegistrationDate;
-
+    private String deathLocation;
+    private String deathLocationType;
+    private String deathLocationEtc;
+    private String deathReportEtc;
     private String reporterName;
-
     private String reporterRrn;
-
+    private String reporterQualification;
     private String reporterRelationToDeceased;
-
     private String reporterAddress;
-
     private String reporterPhone;
-
     private String reporterEmail;
-
     private String submitterName;
-
     private String submitterRrn;
-
     private String funeralCompanyName;
-
     private String directorName;
-
     private String directorPhone;
-
     private String funeralHomeName;
-
-    private String mortuaryInfo;
-
     private String funeralHomeAddress;
-
+    private String funeralHomeAddressUrl;
     private String funeralDuration;
-
+    private String mortuaryInfo;
     private String processionDateTime;
-
     private String burialSiteInfo;
-
     private String chiefMourners;
-
+    private String chiefMournersContact;
+    private String chiefMournerAccountHolder;
+    private String chiefMournerBankName;
+    private String chiefMournerAccountNumber;
     private String templateKeyword;
 
     public static ScheduleRepository repository() {
@@ -121,9 +94,6 @@ public class Schedule {
         // 2. 이벤트로 받은 모든 데이터를 새로 만든 Schedule 객체에 채워넣기
         schedule.setFuneralInfoId(scheduleCreationRequested.getFuneralInfoId());
         schedule.setCustomerId(scheduleCreationRequested.getCustomerId());
-        schedule.setCustomerName(scheduleCreationRequested.getCustomerName());
-        schedule.setCustomerRrn(scheduleCreationRequested.getCustomerRrn());
-        schedule.setCustomerPhone(scheduleCreationRequested.getCustomerPhone());
         schedule.setDeceasedName(scheduleCreationRequested.getDeceasedName());
         schedule.setDeceasedNameHanja(scheduleCreationRequested.getDeceasedNameHanja());
         schedule.setDeceasedRrn(scheduleCreationRequested.getDeceasedRrn());
@@ -133,13 +103,20 @@ public class Schedule {
         schedule.setDeceasedGender(scheduleCreationRequested.getDeceasedGender());
         schedule.setDeceasedReligion(scheduleCreationRequested.getDeceasedReligion());
         schedule.setDeceasedRelationToHouseholdHead(scheduleCreationRequested.getDeceasedRelationToHouseholdHead());
+        schedule.setDeceasedRegisteredAddress(scheduleCreationRequested.getDeceasedRegisteredAddress());
+        schedule.setDeceasedAddress(scheduleCreationRequested.getDeceasedAddress());
         schedule.setReportRegistrationDate(scheduleCreationRequested.getReportRegistrationDate());
+        schedule.setDeathLocation(scheduleCreationRequested.getDeathLocation());
+        schedule.setDeathLocationType(scheduleCreationRequested.getDeathLocationType());
+        schedule.setDeathLocationEtc(scheduleCreationRequested.getDeathLocationEtc());
+        schedule.setDeathReportEtc(scheduleCreationRequested.getDeathReportEtc());
         schedule.setReporterName(scheduleCreationRequested.getReporterName());
         schedule.setReporterRrn(scheduleCreationRequested.getReporterRrn());
         schedule.setReporterRelationToDeceased(scheduleCreationRequested.getReporterRelationToDeceased());
         schedule.setReporterAddress(scheduleCreationRequested.getReporterAddress());
         schedule.setReporterPhone(scheduleCreationRequested.getReporterPhone());
         schedule.setReporterEmail(scheduleCreationRequested.getReporterEmail());
+        schedule.setReporterQualification(scheduleCreationRequested.getReporterQualification());
         schedule.setSubmitterName(scheduleCreationRequested.getSubmitterName());
         schedule.setSubmitterRrn(scheduleCreationRequested.getSubmitterRrn());
         schedule.setFuneralCompanyName(scheduleCreationRequested.getFuneralCompanyName());
@@ -151,7 +128,12 @@ public class Schedule {
         schedule.setFuneralDuration(scheduleCreationRequested.getFuneralDuration());
         schedule.setProcessionDateTime(scheduleCreationRequested.getProcessionDateTime());
         schedule.setBurialSiteInfo(scheduleCreationRequested.getBurialSiteInfo());
+        schedule.setFuneralHomeAddressUrl(scheduleCreationRequested.getFuneralHomeAddressUrl());
         schedule.setChiefMourners(scheduleCreationRequested.getChiefMourners());
+        schedule.setChiefMournersContact(scheduleCreationRequested.getChiefMournersContact());
+        schedule.setChiefMournerAccountHolder(scheduleCreationRequested.getChiefMournerAccountHolder());
+        schedule.setChiefMournerBankName(scheduleCreationRequested.getChiefMournerBankName());
+        schedule.setChiefMournerAccountNumber(scheduleCreationRequested.getChiefMournerAccountNumber());
         schedule.setTemplateKeyword(scheduleCreationRequested.getTemplateKeyword());
 
         // 초기 상태 및 생성일자 설정
@@ -173,13 +155,10 @@ public class Schedule {
     ) {
         // 1. 새로운 Schedule 객체 생성
         Schedule schedule = new Schedule();
-
+        
         // 2. 이벤트로 받은 모든 데이터를 새로 만든 Schedule 객체에 채워넣기
         schedule.setFuneralInfoId(allDocumentsCreationRequested.getFuneralInfoId());
         schedule.setCustomerId(allDocumentsCreationRequested.getCustomerId());
-        schedule.setCustomerName(allDocumentsCreationRequested.getCustomerName());
-        schedule.setCustomerRrn(allDocumentsCreationRequested.getCustomerRrn());
-        schedule.setCustomerPhone(allDocumentsCreationRequested.getCustomerPhone());
         schedule.setDeceasedName(allDocumentsCreationRequested.getDeceasedName());
         schedule.setDeceasedNameHanja(allDocumentsCreationRequested.getDeceasedNameHanja());
         schedule.setDeceasedRrn(allDocumentsCreationRequested.getDeceasedRrn());
@@ -189,13 +168,20 @@ public class Schedule {
         schedule.setDeceasedGender(allDocumentsCreationRequested.getDeceasedGender());
         schedule.setDeceasedReligion(allDocumentsCreationRequested.getDeceasedReligion());
         schedule.setDeceasedRelationToHouseholdHead(allDocumentsCreationRequested.getDeceasedRelationToHouseholdHead());
+        schedule.setDeceasedRegisteredAddress(allDocumentsCreationRequested.getDeceasedRegisteredAddress());
+        schedule.setDeceasedAddress(allDocumentsCreationRequested.getDeceasedAddress());
         schedule.setReportRegistrationDate(allDocumentsCreationRequested.getReportRegistrationDate());
+        schedule.setDeathLocation(allDocumentsCreationRequested.getDeathLocation());
+        schedule.setDeathLocationType(allDocumentsCreationRequested.getDeathLocationType());
+        schedule.setDeathLocationEtc(allDocumentsCreationRequested.getDeathLocationEtc());
+        schedule.setDeathReportEtc(allDocumentsCreationRequested.getDeathReportEtc());
         schedule.setReporterName(allDocumentsCreationRequested.getReporterName());
         schedule.setReporterRrn(allDocumentsCreationRequested.getReporterRrn());
         schedule.setReporterRelationToDeceased(allDocumentsCreationRequested.getReporterRelationToDeceased());
         schedule.setReporterAddress(allDocumentsCreationRequested.getReporterAddress());
         schedule.setReporterPhone(allDocumentsCreationRequested.getReporterPhone());
         schedule.setReporterEmail(allDocumentsCreationRequested.getReporterEmail());
+        schedule.setReporterQualification(allDocumentsCreationRequested.getReporterQualification());
         schedule.setSubmitterName(allDocumentsCreationRequested.getSubmitterName());
         schedule.setSubmitterRrn(allDocumentsCreationRequested.getSubmitterRrn());
         schedule.setFuneralCompanyName(allDocumentsCreationRequested.getFuneralCompanyName());
@@ -207,7 +193,14 @@ public class Schedule {
         schedule.setFuneralDuration(allDocumentsCreationRequested.getFuneralDuration());
         schedule.setProcessionDateTime(allDocumentsCreationRequested.getProcessionDateTime());
         schedule.setBurialSiteInfo(allDocumentsCreationRequested.getBurialSiteInfo());
+        schedule.setFuneralHomeAddressUrl(allDocumentsCreationRequested.getFuneralHomeAddressUrl());
         schedule.setChiefMourners(allDocumentsCreationRequested.getChiefMourners());
+        schedule.setChiefMournersContact(allDocumentsCreationRequested.getChiefMournersContact());
+        schedule.setChiefMournerAccountHolder(allDocumentsCreationRequested.getChiefMournerAccountHolder());
+        schedule.setChiefMournerBankName(allDocumentsCreationRequested.getChiefMournerBankName());
+        schedule.setChiefMournerAccountNumber(allDocumentsCreationRequested.getChiefMournerAccountNumber());
+        
+        // 템플릿 정보
         schedule.setTemplateKeyword(allDocumentsCreationRequested.getTemplateKeyword());
 
         // 초기 상태 및 생성일자 설정
@@ -230,14 +223,18 @@ public class Schedule {
         repository().findById(scheduleDocumentGenerated.getScheduleId()).ifPresent(schedule->{
             
             // 2. 찾은 데이터의 필드 값을 이벤트로 받은 정보로 업데이트합니다.
-            schedule.setScheduleFilePath(scheduleDocumentGenerated.getScheduleFilePath());
+            schedule.setScheduleFileName(scheduleDocumentGenerated.getScheduleFileName()); // [수정] FilePath -> FileName
             schedule.setScheduleFileUrl(scheduleDocumentGenerated.getScheduleFileUrl());
             schedule.setScheduleStatus(scheduleDocumentGenerated.getScheduleStatus());
+            
+            // [추가] DALL-E 관련 정보 업데이트
+            schedule.setScheduleDallePrompt(scheduleDocumentGenerated.getScheduleDallePrompt());
+            schedule.setScheduleDalleTemplateImageUrl(scheduleDocumentGenerated.getScheduleDalleTemplateImageUrl());
             
             // 3. 변경된 내용을 DB에 다시 저장합니다.
             repository().save(schedule);
 
-         });
+        });
     }
     //>>> Clean Arch / Port Method
 

@@ -1,3 +1,8 @@
+// ========================================
+// FILENAME: aivlebigproject/funeralcontext/src/main/java/aivlebigproject/domain/FuneralInfoValidated.java
+// 역할 : 
+// ========================================
+
 package aivlebigproject.domain;
 
 import aivlebigproject.domain.*;
@@ -9,10 +14,11 @@ import lombok.*;
 //<<< DDD / Domain Event
 @Data
 @ToString
-public class ScheduleCreationRequested extends AbstractEvent {
+public class FuneralInfoValidated extends AbstractEvent {
 
     private Long funeralInfoId;
     private Long customerId;
+    private String validationStatus;
     private String deceasedName;
     private String deceasedNameHanja;
     private String deceasedRrn;
@@ -55,11 +61,11 @@ public class ScheduleCreationRequested extends AbstractEvent {
     private String chiefMournerAccountNumber;
     private String templateKeyword;
 
-    public ScheduleCreationRequested(FuneralInfo aggregate) {
+    public FuneralInfoValidated(FuneralInfo aggregate) {
         super(aggregate);
     }
 
-    public ScheduleCreationRequested() {
+    public FuneralInfoValidated() {
         super();
     }
 }
