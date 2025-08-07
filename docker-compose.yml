@@ -55,7 +55,7 @@ services:
     environment:
       - SPRING_PROFILES_ACTIVE=docker
     ports:
-      - "8088:8088" # 외부 8088 포트를 컨테이너 8088 포트로 연결
+      - "8080:8080" # 외부 8080 포트를 컨테이너 8080 포트로 연결
     volumes:
       - ./gateway:/usr/src # 로컬 gateway 폴더를 컨테이너와 연결
       - ./maven-repo:/root/.m2
@@ -72,8 +72,8 @@ services:
       - SPRING_PROFILES_ACTIVE=docker
     env_file:         # <-- Azureblob env
       - .env          # <-- Azureblob env
-    ports:
-      - "8082:8080"
+    # ports:
+    #   - "8080:8080"
     volumes:
       - ./funeralcontext:/usr/src
       - ./maven-repo:/root/.m2
@@ -88,8 +88,8 @@ services:
         condition: service_healthy # kafka 서비스가 healthy 상태가 될 때까지 기다림
     env_file:         # <-- Azureblob env
       - .env          # <-- Azureblob env
-    ports:
-      - "8002:8000"
+    # ports:
+    #   - "8000:8000"
     volumes:
       - ./funeralcontext-ai:/app # 3. 로컬의 funeralcontext-ai 폴더를 컨테이너의 /app 폴더와 연결
 
