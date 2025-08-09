@@ -81,6 +81,7 @@ def start_consumer():
                         "funeralInfoId": event_data.funeralInfoId,
                         "obituaryFileName": result["fileName"],
                         "obituaryFileUrl": result["fileUrl"],
+                        "funeralHomeAddressUrl": result.get("funeralHomeAddressUrl"),
                         "obituaryStatus": "COMPLETED",
                         "obituaryCreatedAt": datetime.now(timezone.utc).isoformat()
                     }
