@@ -25,7 +25,7 @@ def create_death_report_document(event_data: DeathReportDataCreated, blob_servic
             
             # 2. 사망자
             "deceasedName": (200, 112), "deceasedNameHanja": (200, 140),
-            "deceasedRrn": (426, 127),
+            "deceasedRrn": (428, 127),
             "checkbox_deceased_male": (309, 136), "checkbox_deceased_female": (337, 136),
             "deceasedRegisteredAddress": (165, 168),
             "deceasedAddress": (165, 198),
@@ -37,29 +37,29 @@ def create_death_report_document(event_data: DeathReportDataCreated, blob_servic
             "deathLocation": (190, 255), # [주석] funeralHomeAddress 대신 deathLocation을 사용합니다.
             "checkbox_deathLocationType_1": (190, 278), # 주택
             "checkbox_deathLocationType_2": (263, 278), # 의료기관
-            "checkbox_deathLocationType_3": (353, 278), # 사회복지시설
-            "checkbox_deathLocationType_4": (190, 293), # 공공시설
-            "checkbox_deathLocationType_5": (337, 293), # 도로
-            "checkbox_deathLocationType_6": (384, 293), # 상업, 서비스시설
-            "checkbox_deathLocationType_7": (190, 337), # 산업장
-            "checkbox_deathLocationType_8": (263, 337), # 농장
-            "checkbox_deathLocationType_9": (419, 337), # 병원 이송 중 사망
-            "checkbox_deathLocationType_10": (190, 367), # 기타
+            "checkbox_deathLocationType_3": (354, 278), # 사회복지시설
+            "checkbox_deathLocationType_4": (190, 291), # 공공시설
+            "checkbox_deathLocationType_5": (338, 291), # 도로
+            "checkbox_deathLocationType_6": (384, 291), # 상업, 서비스시설
+            "checkbox_deathLocationType_7": (190, 303), # 산업장
+            "checkbox_deathLocationType_8": (263, 303), # 농장
+            "checkbox_deathLocationType_9": (420, 303), # 병원 이송 중 사망
+            "checkbox_deathLocationType_10": (190, 316), # 기타
             "deathLocationEtc": (228, 318),
             "deathReportEtc": (165, 342),
             
             # 4. 신고인
-            "reporterName": (237, 370), "reporterRrn": (423, 372),
-            "checkbox_reporterQualification_1": (154, 393), # 동거하는 친족
-            "checkbox_reporterQualification_2": (211, 393), # 동거하지 않는 친족
-            "checkbox_reporterQualification_3": (280, 393), # 동거자
-            "checkbox_reporterQualification_4": (154, 418), # 비친족 동거자
+            "reporterName": (237, 370), "reporterRrn": (424, 371),
+            "checkbox_reporterQualification_1": (154, 394), # 동거하는 친족
+            "checkbox_reporterQualification_2": (212, 394), # 동거하지 않는 친족
+            "checkbox_reporterQualification_3": (280, 394), # 동거자
+            "checkbox_reporterQualification_4": (155, 416), # 기타(보호시설장/사망장소관리자)
             "reporterRelationToDeceased": (393, 397),
             "reporterAddress": (148, 445), "reporterPhone": (369, 446),
             "reporterEmail": (468, 446),
             
             # 5. 제출인
-            "submitterName": (195, 477), "submitterRrn": (422, 479),
+            "submitterName": (195, 477), "submitterRrn": (424, 478),
         }
 
         doc = fitz.open(template_path)

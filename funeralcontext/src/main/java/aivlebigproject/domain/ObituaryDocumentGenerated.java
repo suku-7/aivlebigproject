@@ -15,4 +15,5 @@ public class ObituaryDocumentGenerated {
     private String obituaryFileUrl;
     private String obituaryStatus;
     private Date obituaryCreatedAt;
+    private String funeralHomeAddressUrl; // 지도 URL
 }

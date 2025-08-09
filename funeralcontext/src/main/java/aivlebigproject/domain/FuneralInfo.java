@@ -103,48 +103,19 @@ public class FuneralInfo {
         funeralInfoUpdated.publishAfterCommit();
     }
 
-    //>>> Clean Arch / Port Method
-    //<<< Clean Arch / Port Method
+    // [주석] 이 메서드는 이제 ObituaryController에서 직접 로직을 처리하므로 사용되지 않습니다.
     public void createObituary() {
-        //implement business logic here:
-
-        ObituaryCreationRequested obituaryCreationRequested = new ObituaryCreationRequested(
-            this
-        );
-        obituaryCreationRequested.publishAfterCommit();
+        // No operation
     }
 
-    //>>> Clean Arch / Port Method
-    //<<< Clean Arch / Port Method
+    // [주석] 이 메서드는 이제 ScheduleController에서 직접 로직을 처리하므로 사용되지 않습니다.
     public void createSchedule() {
-        //implement business logic here:
-
-        ScheduleCreationRequested scheduleCreationRequested = new ScheduleCreationRequested(
-            this
-        );
-        scheduleCreationRequested.publishAfterCommit();
+        // No operation
     }
 
-    //>>> Clean Arch / Port Method
-    //<<< Clean Arch / Port Method
-    public void createAllDocuments() {
-        //implement business logic here:
-
-        AllDocumentsCreationRequested allDocumentsCreationRequested = new AllDocumentsCreationRequested(
-            this
-        );
-        allDocumentsCreationRequested.publishAfterCommit();
-    }
-
-    //>>> Clean Arch / Port Method
-    //<<< Clean Arch / Port Method
+    // [주석] 이 메서드는 이제 DeathReportController에서 직접 로직을 처리하므로 사용되지 않습니다.
     public void createDeathReport() {
-        //implement business logic here:
-
-        DeathReportCreationRequested deathReportCreationRequested = new DeathReportCreationRequested(
-            this
-        );
-        deathReportCreationRequested.publishAfterCommit();
+        // No operation
     }
 }
 //>>> DDD / Aggregate Root

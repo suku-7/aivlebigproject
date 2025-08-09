@@ -273,7 +273,7 @@ def create_schedule_document(event_data: ScheduleDataCreated, blob_service_clien
 
         # 하단 정보 텍스트 기입
         # [주석] 하단 텍스트가 잘리지 않도록 y 좌표를 조정했습니다.
-        footer_text = f"총괄 장례지도사: {event_data.directorName or ''} ({event_data.directorPhone or ''})"
+        footer_text = f"담당 장례지도사: {event_data.directorName or ''} ({event_data.directorPhone or ''})"
         draw.text((120, image.height - 100), footer_text, font=font_footer, fill=text_color, anchor="lt")
         
         # --- 3. 텍스트가 추가된 최종 이미지를 Azure Blob에 업로드 ---

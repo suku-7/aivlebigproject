@@ -5,6 +5,7 @@ import aivlebigproject.infra.AbstractEvent;
 import java.time.LocalDate;
 import java.util.*;
 import lombok.*;
+import org.springframework.beans.BeanUtils; // [주석] BeanUtils를 사용하기 위해 import 합니다.
 
 //<<< DDD / Domain Event
 @Data
@@ -62,12 +63,25 @@ public class ObituaryDataCreated extends AbstractEvent {
     private String chiefMournerAccountNumber;
     private String templateKeyword;
 
+    public ObituaryDataCreated() {
+        super();
+    }
+
+    // [주석] 이 생성자는 더 이상 직접 사용되지 않거나, Python의 응답을 받을 때만 사용됩니다.
     public ObituaryDataCreated(Obituary aggregate) {
         super(aggregate);
     }
 
-    public ObituaryDataCreated() {
-        super();
+    // [추가] FuneralInfo와 Obituary 객체를 모두 받아 이벤트를 만드는 새로운 생성자입니다.
+    public ObituaryDataCreated(FuneralInfo funeralInfo, Obituary obituary) {
+        // [주석] 먼저 FuneralInfo의 모든 데이터를 이 이벤트 객체로 복사합니다.
+        BeanUtils.copyProperties(funeralInfo, this);
+
+        // [주석] 그 다음, Obituary 객체에서 필요한 고유 정보들을 가져와 설정합니다.
+        this.setObituaryId(obituary.getObituaryId());
+        this.setObituaryStatus(obituary.getObituaryStatus());
+        this.setObituaryCreatedAt(obituary.getObituaryCreatedAt());
+        // ... (필요시 obituaryTemplateId 등 다른 값도 설정)
     }
 }
 //>>> DDD / Domain Event

@@ -141,28 +141,37 @@ def create_obituary_document(event_data: ObituaryDataCreated, blob_service_clien
             """.strip()
             draw.text(coordinates['account_info'], account_info_text, font=font_list, fill=text_color, spacing=15)
 
-        # 맺음말
-        # closing_text = "경황이 없어 일일이 연락드리지 못함을\n널리 혜량하여 주시기 바랍니다."
-        # draw.text(coordinates['closing'], closing_text, font=font_main, fill=text_color, spacing=10, align="center", anchor="mm")
-
         # [주석] 유가족 개인 연락처 대신 장례지도사 정보를 넣어 문의 창구를 일원화했습니다.
         # 서명 및 연락처
         signature_text = f"- {event_data.chiefMourners} 올림 -\n장례 문의 : {event_data.directorName} ({event_data.directorPhone})"
         draw.text(coordinates['signature'], signature_text, font=font_list, fill=text_color, spacing=10, align="center", anchor="mm")
 
-        # [주석] 장례식장 주소를 기반으로 길찾기 QR코드를 생성하고 이미지 우측 하단에 삽입합니다.
+        # QR 코드 생성
         if event_data.funeralHomeAddress:
             encoded_address = urllib.parse.quote(event_data.funeralHomeAddress)
-            qr_data = f"https://map.naver.com/p/search/{encoded_address}"
-            
-            qr_img = qrcode.make(qr_data)
-            qr_img = qr_img.resize((120, 120))
-            
-            qr_position = (image.width - qr_img.width - 80, image.height - qr_img.height - 80)
-            image.paste(qr_img, qr_position)
-            draw.text((qr_position[0] + qr_img.width / 2, qr_position[1] + qr_img.height + 10), 
-                      "오시는 길 (QR)", font=font_small, fill=text_color, anchor="mt")
+            qr_url = f"https://map.naver.com/v5/search/{encoded_address}"
+            funeral_home_url = qr_url
 
+            # box_size와 border를 조절하여 원하는 크기의 QR코드를 직접 생성합니다.
+            # 이렇게 하면 화질 저하 없이 선명한 결과물을 얻을 수 있습니다.
+            qr = qrcode.QRCode(
+                error_correction=qrcode.constants.ERROR_CORRECT_H,
+                box_size=4,  # QR코드 모듈(네모) 하나의 크기. 120px 근처로 만들려면 3~5 사이 값 추천
+                border=2   # 테두리 여백
+            )
+            qr.add_data(qr_url)
+            qr.make(fit=True)
+            qr_img = qr.make_image(fill_color="black", back_color="white").convert("RGBA")
+
+            # QR 붙이기 (mask 사용)
+            qr_position = (image.width - qr_img.width - 80, image.height - qr_img.height - 80)
+            image.paste(qr_img, qr_position, mask=qr_img)
+
+            # 라벨
+            draw.text(
+                (qr_position[0] + qr_img.width / 2, qr_position[1] + qr_img.height + 10),
+                "오시는 길 (QR)", font=font_small, fill=text_color, anchor="mt"
+            )
         # 5. 완성된 이미지를 메모리상의 바이트 데이터로 변환
         img_byte_arr = io.BytesIO()
         image.save(img_byte_arr, format='PNG')
@@ -177,7 +186,8 @@ def create_obituary_document(event_data: ObituaryDataCreated, blob_service_clien
             # 7. 성공 시, 파일 이름과 URL을 담은 딕셔너리 반환
             return {
                 "fileName": blob_name,
-                "fileUrl": file_url
+                "fileUrl": file_url,
+                "funeralHomeAddressUrl": funeral_home_url
             }
         else:
             return None
