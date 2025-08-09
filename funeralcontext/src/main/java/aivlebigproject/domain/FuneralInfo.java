@@ -15,6 +15,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import javax.persistence.*;
+
+import org.springframework.beans.BeanUtils;
+
 import lombok.Data;
 
 @Entity
@@ -86,9 +89,16 @@ public class FuneralInfo {
     }
 
     //<<< Clean Arch / Port Method
-    public void updateFuneralInfo() {
-        //implement business logic here:
+    // [주석] updateFuneralInfo 메서드가 Command 객체를 파라미터로 받도록 변경합니다.
+    public void updateFuneralInfo(UpdateFuneralInfoCommand command) {
+        // [주석] Command 객체에 담겨온 데이터로 현재 Aggregate의 필드 값을 업데이트합니다.
+        //       BeanUtils.copyProperties를 사용하면 이 과정을 자동화할 수 있습니다.
+        BeanUtils.copyProperties(command, this);
 
+        // [주석] 요청에 따라 validationStatus를 "VALIDATED"로 설정합니다.
+        this.setValidationStatus("VALIDATED");
+
+        // [주석] 업데이트가 완료되었다는 이벤트를 발행합니다.
         FuneralInfoUpdated funeralInfoUpdated = new FuneralInfoUpdated(this);
         funeralInfoUpdated.publishAfterCommit();
     }
@@ -135,47 +145,6 @@ public class FuneralInfo {
             this
         );
         deathReportCreationRequested.publishAfterCommit();
-    }
-    
-    // --- [2. Controller가 호출할 메서드 수정] ---
-    public void validateFuneralInfo() {
-        System.out.println("🤖 FuneralInfo Aggregate에서 AI 검증을 시작합니다...");
-        
-        FuneralInfoAiValidator validator = FuneralcontextApplication.applicationContext.getBean(
-            FuneralInfoAiValidator.class
-        );
-
-        try {
-            ObjectMapper objectMapper = new ObjectMapper();
-            // [주석] FuneralInfo 객체를 Map으로 변환합니다. (이 부분은 나중에 전체 객체 검증으로 바뀔 수 있습니다.)
-            Map<String, Object> dataAsMap = objectMapper.convertValue(this, Map.class);
-            
-            // [수정] Validator가 List<AiValidationError>를 반환하므로, 
-            //       이 리스트가 비어있는지(isEmpty) 여부로 isDataValid를 결정합니다.
-            boolean isDataValid = validator.validateData(dataAsMap).isEmpty();
-
-            System.out.println("🤖 AI 검증 결과: " + (isDataValid ? "정상 (OK)" : "오류 (ERROR)"));
-            this.processValidationResult(isDataValid);
-
-        } catch (Exception e) {
-            System.out.println("❌ 데이터 변환 중 오류 발생: " + e.getMessage());
-            this.processValidationResult(false);
-        }
-    }
-
-    // --- [3. 검증 결과 처리 메서드 추가] ---
-    // [주석] AI 검증 결과를 받아 상태를 변경하고, 성공 시에만 이벤트를 발행하는 내부 로직입니다.
-    public void processValidationResult(boolean isDataValid) {
-        if (isDataValid) {
-            this.setValidationStatus("VALIDATED");
-            
-            // 상태가 'VALIDATED'일 때만 이벤트를 발행합니다.
-            FuneralInfoValidated funeralInfoValidated = new FuneralInfoValidated(this);
-            funeralInfoValidated.publishAfterCommit();
-
-        } else {
-            this.setValidationStatus("ERROR");
-        }
     }
 }
 //>>> DDD / Aggregate Root

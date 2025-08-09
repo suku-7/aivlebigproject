@@ -23,6 +23,7 @@ public class FuneralInfoController {
     @Autowired
     FuneralInfoRepository funeralInfoRepository;
 
+    // [수정] updateFuneralInfo 메서드를 @RequestBody를 사용하도록 변경합니다.
     @RequestMapping(
         value = "/funeralInfos/{id}/updatefuneralinfo",
         method = RequestMethod.PUT,
@@ -30,8 +31,7 @@ public class FuneralInfoController {
     )
     public FuneralInfo updateFuneralInfo(
         @PathVariable(value = "id") Long id,
-        HttpServletRequest request,
-        HttpServletResponse response
+        @RequestBody UpdateFuneralInfoCommand command
     ) throws Exception {
         System.out.println(
             "##### /funeralInfo/updateFuneralInfo  called #####"
@@ -42,7 +42,7 @@ public class FuneralInfoController {
 
         optionalFuneralInfo.orElseThrow(() -> new Exception("No Entity Found"));
         FuneralInfo funeralInfo = optionalFuneralInfo.get();
-        funeralInfo.updateFuneralInfo();
+        funeralInfo.updateFuneralInfo(command);
 
         funeralInfoRepository.save(funeralInfo);
         return funeralInfo;
@@ -139,30 +139,6 @@ public class FuneralInfoController {
         optionalFuneralInfo.orElseThrow(() -> new Exception("No Entity Found"));
         FuneralInfo funeralInfo = optionalFuneralInfo.get();
         funeralInfo.createDeathReport();
-
-        funeralInfoRepository.save(funeralInfo);
-        return funeralInfo;
-    }
-    @RequestMapping(
-        value = "/funeralInfos/{id}/validatefuneralinfo",
-        method = RequestMethod.PUT,
-        produces = "application/json;charset=UTF-8"
-    )
-    public FuneralInfo validateFuneralInfo(
-        @PathVariable(value = "id") Long id,
-        HttpServletRequest request,
-        HttpServletResponse response
-    ) throws Exception {
-        System.out.println(
-            "##### /funeralInfo/validateFuneralInfo  called #####"
-        );
-        Optional<FuneralInfo> optionalFuneralInfo = funeralInfoRepository.findById(
-            id
-        );
-
-        optionalFuneralInfo.orElseThrow(() -> new Exception("No Entity Found"));
-        FuneralInfo funeralInfo = optionalFuneralInfo.get();
-        funeralInfo.validateFuneralInfo();
 
         funeralInfoRepository.save(funeralInfo);
         return funeralInfo;

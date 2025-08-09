@@ -28,9 +28,6 @@ import org.springframework.stereotype.Service;
 public class PolicyHandler {
 
     @Autowired
-    CustomerRepository customerRepository;
-
-    @Autowired
     FuneralInfoRepository funeralInfoRepository;
 
     @Autowired

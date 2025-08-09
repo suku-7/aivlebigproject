@@ -6,7 +6,7 @@ import java.util.*;
 import lombok.Data;
 
 @Data
-public class CustomerRegistered extends AbstractEvent {
+public class CustomerDeleted extends AbstractEvent {
 
     private Long customerId;
     private String name;

@@ -27,8 +27,8 @@ public class FuneralInfoAiValidator {
 
     private static final String OPENAI_API_URL = "https://api.openai.com/v1/chat/completions";
 
-    // [수정] 반환 타입을 boolean에서 List<AiValidationError>로 변경
-    public List<AiValidationError> validateData(Map<String, Object> fieldsToValidate) {
+    // [수정] 반환 타입을 boolean에서 List<AiValidationWarning>로 변경
+    public List<AiValidationWarning> validateData(Map<String, Object> fieldsToValidate) {
         try {
             ObjectMapper objectMapper = new ObjectMapper();
             String fieldsJson = objectMapper.writeValueAsString(fieldsToValidate);
@@ -51,14 +51,6 @@ public class FuneralInfoAiValidator {
 
                 "분석할 데이터는 다음과 같습니다:\n" + fieldsJson;
 
-            // // [수정] 프롬프트를 상세 JSON 응답을 요청하도록 변경
-            // String prompt = "당신은 장례 서비스 시스템의 데이터 검증 전문가입니다. " +
-            //         "다음 JSON 데이터를 분석하여 오탈자, 형식 오류, 논리적 오류를 찾아주세요. " +
-            //         "결과는 'errors'라는 키를 가진 JSON 배열로 반환해주세요. 배열의 각 객체는 fieldName, errorDescription, suggestion 키를 가져야 합니다. " +
-            //         "이때, errorDescription과 suggestion의 내용은 반드시 한국어로 작성해야 합니다. " + // <-- [추가] 한글 답변 지시사항
-            //         "오류가 없으면 빈 배열([])을 반환해주세요. " +
-            //         "데이터는 다음과 같습니다: \n" + fieldsJson;
-
             RestTemplate restTemplate = new RestTemplate();
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
@@ -78,7 +70,7 @@ public class FuneralInfoAiValidator {
             HttpEntity<Map<String, Object>> entity = new HttpEntity<>(requestBody, headers);
             Map<String, Object> response = restTemplate.postForObject(OPENAI_API_URL, entity, Map.class);
 
-            // [수정] API 응답을 파싱하여 List<AiValidationError> 객체로 변환
+            // [수정] API 응답을 파싱하여 List<AiValidationWarning> 객체로 변환
             if (response != null && response.containsKey("choices")) {
                 List<Map<String, Object>> choices = (List<Map<String, Object>>) response.get("choices");
                 if (!choices.isEmpty()) {
@@ -89,7 +81,7 @@ public class FuneralInfoAiValidator {
                     System.out.println("AI 검증 응답 (JSON): " + content);
                     
                     // LLM이 반환한 JSON 문자열을 객체로 변환
-                    Map<String, List<AiValidationError>> result = objectMapper.readValue(content, new TypeReference<>() {});
+                    Map<String, List<AiValidationWarning>> result = objectMapper.readValue(content, new TypeReference<>() {});
                     return result.getOrDefault("warnings", Collections.emptyList());
                 }
             }
@@ -97,16 +89,17 @@ public class FuneralInfoAiValidator {
 
         } catch (Exception e) {
             e.printStackTrace();
-            // [수정] API 호출 자체에 실패했을 때를 위한 비상 오류 객체를 생성하여 반환
-            return Collections.singletonList(createFallbackError(e.getMessage()));
+            // [수정] 변경된 이름의 메서드를 호출합니다.
+            return Collections.singletonList(createFallbackWarning(e.getMessage()));
         }
     }
     
-    private AiValidationError createFallbackError(String errorMessage) {
-        AiValidationError error = new AiValidationError();
-        error.setFieldName("system");
-        error.setWarningDescription("AI 검증 시스템에 오류가 발생했습니다.");
-        error.setSuggestion("잠시 후 다시 시도해주세요. 오류: " + errorMessage);
-        return error;
+    // [수정] 메서드 이름과 내부 변수명을 'Warning'으로 통일합니다.
+    private AiValidationWarning createFallbackWarning(String errorMessage) {
+        AiValidationWarning warning = new AiValidationWarning();
+        warning.setFieldName("system");
+        warning.setWarningDescription("AI 검증 시스템에 오류가 발생했습니다.");
+        warning.setSuggestion("잠시 후 다시 시도해주세요. 오류: " + errorMessage);
+        return warning;
     }
 }
