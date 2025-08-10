@@ -12,10 +12,6 @@ venv/
 env/
 .env
 
-# 운영체제 파일
-.DS_Store
-Thumbs.db
-
 # IDE / Editor
 .idea/
 .vscode/

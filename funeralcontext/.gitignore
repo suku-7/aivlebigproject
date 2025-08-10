@@ -12,13 +12,6 @@ pom.xml.next
 dependency-reduced-pom.xml
 .flattened-pom.xml
 
-# [추가] Maven Resolver State (메이븐 상태 관련 파일)
-**/resolver-status.properties
-**/_remote.repositories
-
-# [추가] Local Maven Repository (직접 추가한 라이브러리 폴더)
-maven-repo/
-
 # ==================================
 # IDE & Editor Settings
 # ==================================
