@@ -27,6 +27,7 @@ public class Schedule {
     private Long scheduleId;
     private Long funeralInfoId;
     private Long scheduleTemplateId;
+    @Lob // 이 어노테이션을 추가하여 긴 텍스트를 저장할 수 있도록 설정
     private String scheduleDallePrompt;
     private String scheduleDalleTemplateImageUrl;
     private String scheduleFileName;
@@ -92,17 +93,21 @@ public class Schedule {
         repository().findById(scheduleDocumentGenerated.getScheduleId()).ifPresent(schedule->{
             
             // 2. 찾은 데이터의 필드 값을 이벤트로 받은 정보로 업데이트합니다.
-            schedule.setScheduleFileName(scheduleDocumentGenerated.getScheduleFileName()); // [수정] FilePath -> FileName
+            schedule.setScheduleFileName(scheduleDocumentGenerated.getScheduleFileName());
             schedule.setScheduleFileUrl(scheduleDocumentGenerated.getScheduleFileUrl());
             schedule.setScheduleStatus(scheduleDocumentGenerated.getScheduleStatus());
             
-            // [추가] DALL-E 관련 정보 업데이트
+            // DALL-E 관련 정보 업데이트
             schedule.setScheduleDallePrompt(scheduleDocumentGenerated.getScheduleDallePrompt());
             schedule.setScheduleDalleTemplateImageUrl(scheduleDocumentGenerated.getScheduleDalleTemplateImageUrl());
             
+            // 👇 [추가] 누락되었던 생성일시 업데이트 로직
+            if (scheduleDocumentGenerated.getScheduleCreatedAt() != null) {
+                schedule.setScheduleCreatedAt(scheduleDocumentGenerated.getScheduleCreatedAt());
+            }
+            
             // 3. 변경된 내용을 DB에 다시 저장합니다.
             repository().save(schedule);
-
         });
     }
     //>>> Clean Arch / Port Method

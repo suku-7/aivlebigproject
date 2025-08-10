@@ -8,7 +8,7 @@ import os
 import base64
 from openai import OpenAI
 from PIL import Image, ImageDraw, ImageFont
-from datetime import datetime
+from datetime import datetime, timezone
 from app.schemas import ScheduleDataCreated
 from .azure_uploader import upload_to_blob # [주석] Azure 업로드 함수를 import 합니다.
 
@@ -30,12 +30,21 @@ def generate_and_upload_template(event_data: ScheduleDataCreated, blob_service_c
         keyword = event_data.templateKeyword
 
         prompt = (
-            f"연한 수채화 느낌의 장례식 일정표 배경 이미지를 그려줘. "
-            f"이미지는 세로형이며, 배경은 따뜻한 색상이고 중앙에는 넓은 여백이 있어야 해. "
-            f"전체적인 분위기는 '{religion}' 종교와 '{keyword}' 키워드에 어울리도록 차분하고 정중하게 표현해줘. "
-            f"불필요한 장식은 배제하고, 텍스트가 잘 읽힐 수 있도록 미니멀한 구성이면 좋겠어."
-            f"텍스트, 문장, 알파벳, 글자는 절대로 포함하지 마세요. 오직 배경 그래픽만 포함된 미니멀한 이미지여야 합니다."
+            f"연한 수채화 느낌의 장례식 일정표 세로형 배경 이미지를 그려줘. "
+            f"중앙에는 텍스트를 넣을 수 있도록 넓은 여백을 두고, "
+            f"'{keyword}' 키워드의 분위기에 맞춰 색조와 분위기를 변주하되 톤은 차분하고 정중하게 표현해줘. "
+            f"너무 밝거나 채도가 높은 색은 피하고, 키워드에 맞는 은은한 색상 포인트를 사용해. "
+            f"텍스트 가독성을 위해 질감과 패턴은 최소화하고, 불필요한 장식은 넣지 마. "
+            f"텍스트·문장·알파벳은 절대 포함하지 마."
         )
+        # prompt = (
+        #     '{religion}' 종교의 상징성과 f"연한 수채화 느낌의 장례식 일정표 세로형 배경 이미지를 그려줘. "
+        #     f"중앙에는 텍스트를 넣을 수 있도록 넓은 여백을 두고, "
+        #     f"'{religion}' 종교의 상징성과 '{keyword}' 키워드의 분위기를 은은하게 반영해 차분하고 정중하게 표현해줘. "
+        #     f"배경색은 너무 밝거나 채도가 높은 색을 피하고, 종교와 키워드에 맞게 색감을 자연스럽게 선택해. "
+        #     f"텍스트 가독성을 위해 질감과 패턴은 최소화하고, 불필요한 장식이나 특정 종교를 직접적으로 나타내는 그림(예: 십자가, 불상)은 넣지 마. "
+        #     f"오직 배경 그래픽만 포함된 단순하고 미니멀한 이미지여야 하며, 텍스트·문장·알파벳은 절대 포함하지 마."
+        # )
         print(f"   - 생성된 프롬프트: {prompt}", flush=True)
         print("🎨 이미지 생성 중입니다...", flush=True)
         
@@ -52,7 +61,8 @@ def generate_and_upload_template(event_data: ScheduleDataCreated, blob_service_c
         
         # [주석] 생성된 원본 이미지를 Azure Blob에 업로드합니다.
         doc_id = event_data.scheduleId
-        template_blob_name = f"schedule-templates/template_{doc_id}.png"
+        time_stamp = datetime.now(timezone.utc).strftime('%Y%m%d%H%M%S')
+        template_blob_name = f"schedule-templates/template_{doc_id}_{time_stamp}.png"
         template_url = upload_to_blob(blob_service_client, container_name, template_blob_name, image_bytes)
 
         if template_url:
@@ -124,15 +134,16 @@ def create_schedule_document(event_data: ScheduleDataCreated, blob_service_clien
 
         # 기본 정보
         info_text = f"""
-■ 장례기간 : {event_data.funeralDuration or '3일장'}
-■ 빈      소 : {event_data.mortuaryInfo or '정보 없음'}
-■ 발      인 : {procession_datetime_formatted or '정보 없음'}
-■ 장      지 : {event_data.burialSiteInfo or '정보 없음'}
+■ 장례기간 : {event_data.funeralDuration or ''}
+■ 상주 : {event_data.chiefMourners or ''}
+■ 빈소 : {event_data.funeralHomeName} {event_data.mortuaryInfo or ''}
+■ 발인 : {procession_datetime_formatted or ''}
+■ 장지 : {event_data.burialSiteInfo or ''}
         """.strip()
         draw.text((120, 280), info_text, font=font_info, fill=text_color, spacing=15)
 
         # --- 종교별 상세 일정 그리기 ---
-        y_pos = 470
+        y_pos = 510
         religion = event_data.deceasedReligion or "무교"
         
         # 공통 스타일 변수
@@ -273,7 +284,7 @@ def create_schedule_document(event_data: ScheduleDataCreated, blob_service_clien
 
         # 하단 정보 텍스트 기입
         # [주석] 하단 텍스트가 잘리지 않도록 y 좌표를 조정했습니다.
-        footer_text = f"담당 장례지도사: {event_data.directorName or ''} ({event_data.directorPhone or ''})"
+        footer_text = f"장례 문의 : {event_data.directorName or ''} ({event_data.directorPhone or ''})"
         draw.text((120, image.height - 100), footer_text, font=font_footer, fill=text_color, anchor="lt")
         
         # --- 3. 텍스트가 추가된 최종 이미지를 Azure Blob에 업로드 ---
@@ -282,7 +293,8 @@ def create_schedule_document(event_data: ScheduleDataCreated, blob_service_clien
         final_file_data = final_img_byte_arr.getvalue()
         
         doc_id = event_data.scheduleId
-        final_blob_name = f"schedules/schedule_{doc_id}.png"
+        time_stamp = datetime.now(timezone.utc).strftime('%Y%m%d%H%M%S')
+        final_blob_name = f"schedules/schedule_{doc_id}_{time_stamp}.png"
         final_file_url = upload_to_blob(blob_service_client, container_name, final_blob_name, final_file_data)
 
         if final_file_url:

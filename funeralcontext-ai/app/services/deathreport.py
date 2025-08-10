@@ -4,7 +4,7 @@
 # ========================================
 
 import fitz
-from datetime import datetime
+from datetime import datetime, timezone
 from app.schemas import DeathReportDataCreated
 from .azure_uploader import upload_to_blob # [주석] Azure 업로드 함수를 import 합니다.
 
@@ -56,12 +56,26 @@ def create_death_report_document(event_data: DeathReportDataCreated, blob_servic
             "checkbox_reporterQualification_4": (155, 416), # 기타(보호시설장/사망장소관리자)
             "reporterRelationToDeceased": (393, 397),
             "reporterAddress": (148, 445), "reporterPhone": (369, 446),
-            "reporterEmail": (468, 446),
+            "reporterEmail": (468, 442),
+            "reporterEmail_line2": (468, 454), # [추가] 이메일 두 번째 줄을 위한 좌표
             
             # 5. 제출인
             "submitterName": (195, 477), "submitterRrn": (424, 478),
         }
-
+        
+        # [추가] 특정 필드의 폰트 크기를 개별적으로 지정하기 위한 딕셔너리
+        custom_fontsizes = {
+            "deceasedRegisteredAddress": 7,
+            "deceasedAddress": 7,
+            "deathLocation": 7,
+            "deathLocationEtc": 7,
+            "deathReportEtc": 7,
+            "reporterAddress": 7,
+            "reporterPhone": 7,
+            "reporterEmail": 7, # 이메일 폰트 크기도 조정
+        }
+        default_fontsize = 10
+        
         doc = fitz.open(template_path)
         page = doc[0]
 
@@ -109,10 +123,32 @@ def create_death_report_document(event_data: DeathReportDataCreated, blob_servic
             data_to_fill["death_hour"] = dt_obj.strftime("%H")
             data_to_fill["death_minute"] = dt_obj.strftime("%M")
         
-        # 텍스트 필드 채우기
+        # --- [수정] 텍스트 필드 채우기 로직 변경 ---
         for key, coord in coordinates.items():
-            if "checkbox" not in key and key in data_to_fill and data_to_fill[key] is not None:
-                page.insert_text(coord, str(data_to_fill[key]), fontname="korean_font", fontsize=10, color=text_color)
+            # 이메일과 체크박스는 별도로 처리하므로 건너뜁니다.
+            if "checkbox" in key or key.startswith("reporterEmail"):
+                continue
+
+            if key in data_to_fill and data_to_fill[key] is not None:
+                # 개별 폰트 크기가 지정되어 있으면 사용하고, 아니면 기본 크기를 사용합니다.
+                fontsize = custom_fontsizes.get(key, default_fontsize)
+                page.insert_text(coord, str(data_to_fill[key]), fontname="korean_font", fontsize=fontsize, color=text_color)
+
+        # --- [추가] 이메일 분할 처리 로직 ---
+        if data_to_fill.get("reporterEmail"):
+            email = data_to_fill["reporterEmail"]
+            if "@" in email:
+                # 이메일을 '@' 기준으로 분할하여 두 줄로 표시합니다. (예: admin@, naver.com)
+                local_part, domain = email.split('@', 1)
+                line1 = f"{local_part}@"
+                line2 = domain
+                
+                fontsize = custom_fontsizes.get("reporterEmail", default_fontsize)
+                
+                # 첫 번째 줄 삽입
+                page.insert_text(coordinates["reporterEmail"], line1, fontname="korean_font", fontsize=fontsize, color=text_color)
+                # 두 번째 줄 삽입
+                page.insert_text(coordinates["reporterEmail_line2"], line2, fontname="korean_font", fontsize=fontsize, color=text_color)
 
         # --- 체크박스 처리 ---
         # 1. 사망자 성별
@@ -147,7 +183,8 @@ def create_death_report_document(event_data: DeathReportDataCreated, blob_servic
         
         # 2. Azure에 업로드
         doc_id = event_data.deathReportId
-        blob_name = f"death-reports/death_report_{doc_id}.pdf"
+        time_stamp = datetime.now(timezone.utc).strftime('%Y%m%d%H%M%S')
+        blob_name = f"death-reports/death_report_{doc_id}_{time_stamp}.pdf"
         file_url = upload_to_blob(blob_service_client, container_name, blob_name, file_data)
 
         if file_url:

@@ -1,0 +1,25 @@
+# =====================================
+# 
+# =====================================
+
+# Python Bytecode
+__pycache__/
+*.pyc
+
+# 가상환경
+venv/
+.venv/
+env/
+.env
+
+# 운영체제 파일
+.DS_Store
+Thumbs.db
+
+# IDE / Editor
+.idea/
+.vscode/
+
+# 로그 및 데이터 파일
+*.log
+*.csv

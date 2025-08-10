@@ -8,7 +8,7 @@ import os
 import pandas as pd
 from openai import OpenAI
 from PIL import Image, ImageDraw, ImageFont
-from datetime import datetime
+from datetime import datetime, timezone
 import qrcode
 import urllib.parse
 from app.schemas import ObituaryDataCreated
@@ -100,8 +100,7 @@ def create_obituary_document(event_data: ObituaryDataCreated, blob_service_clien
             "intro": (image.width / 2, 320),
             "details_list": (170, 450),
             "account_info": (170, 650), # [주석] 계좌 정보 좌표 추가
-            "closing": (image.width / 2, 850),
-            "signature": (image.width / 2, 950)
+            "signature": (image.width / 2, 850)
         }
 
         # 제목
@@ -124,10 +123,10 @@ def create_obituary_document(event_data: ObituaryDataCreated, blob_service_clien
 
         # 핵심 정보 목록
         details_text = f"""
-■ 상주 : {event_data.chiefMourners or '정보 없음'}
+■ 상주 : {event_data.chiefMourners or ''}
 ■ 빈소 : {event_data.funeralHomeName} {event_data.mortuaryInfo or ''}
-■ 발인 : {procession_date_with_day or '정보 없음'}
-■ 장지 : {event_data.burialSiteInfo or '정보 없음'}
+■ 발인 : {procession_date_with_day or ''}
+■ 장지 : {event_data.burialSiteInfo or ''}
         """.strip()
         draw.text(coordinates['details_list'], details_text, font=font_list, fill=text_color, spacing=15)
 
@@ -142,10 +141,20 @@ def create_obituary_document(event_data: ObituaryDataCreated, blob_service_clien
             draw.text(coordinates['account_info'], account_info_text, font=font_list, fill=text_color, spacing=15)
 
         # [주석] 유가족 개인 연락처 대신 장례지도사 정보를 넣어 문의 창구를 일원화했습니다.
-        # 서명 및 연락처
-        signature_text = f"- {event_data.chiefMourners} 올림 -\n장례 문의 : {event_data.directorName} ({event_data.directorPhone})"
+        # [수정] 서명 부분에서 장례지도사 정보 삭제
+        signature_text = f"- {event_data.chiefMourners or ''} 올림 -"
         draw.text(coordinates['signature'], signature_text, font=font_list, fill=text_color, spacing=10, align="center", anchor="mm")
-
+        
+        # [추가] 하단 푸터에 장례지도사 정보(장례 문의) 추가
+        if event_data.directorName and event_data.directorPhone:
+            footer_text = f"장례 문의: {event_data.directorName} {event_data.directorPhone}"
+            draw.text(
+                (120, image.height - 100), 
+                footer_text, 
+                font=font_small, 
+                fill=text_color, 
+                anchor="lt"
+            )
         # QR 코드 생성
         if event_data.funeralHomeAddress:
             encoded_address = urllib.parse.quote(event_data.funeralHomeAddress)
@@ -155,9 +164,9 @@ def create_obituary_document(event_data: ObituaryDataCreated, blob_service_clien
             # box_size와 border를 조절하여 원하는 크기의 QR코드를 직접 생성합니다.
             # 이렇게 하면 화질 저하 없이 선명한 결과물을 얻을 수 있습니다.
             qr = qrcode.QRCode(
-                error_correction=qrcode.constants.ERROR_CORRECT_H,
-                box_size=4,  # QR코드 모듈(네모) 하나의 크기. 120px 근처로 만들려면 3~5 사이 값 추천
-                border=2   # 테두리 여백
+                error_correction=qrcode.constants.ERROR_CORRECT_M,
+                box_size=3,  # QR코드 모듈(네모) 하나의 크기. 120px 근처로 만들려면 3~5 사이 값 추천
+                border=4   # 테두리 여백
             )
             qr.add_data(qr_url)
             qr.make(fit=True)
@@ -167,10 +176,31 @@ def create_obituary_document(event_data: ObituaryDataCreated, blob_service_clien
             qr_position = (image.width - qr_img.width - 80, image.height - qr_img.height - 80)
             image.paste(qr_img, qr_position, mask=qr_img)
 
-            # 라벨
+            # [수정] '오시는 길 (QR)' 텍스트에만 흰색 배경을 추가하는 코드입니다.
+
+            # 1. 배경을 넣을 텍스트를 변수에 저장
+            text_label = "오시는 길 (QR)"
+
+            # 2. 텍스트가 차지할 영역(Bounding Box)을 정확히 계산합니다. (QR코드 영역이 아님)
+            label_bbox = draw.textbbox((0, 0), text_label, font=font_small, anchor="mt")
+
+            # 3. 텍스트 영역보다 약간 더 큰(padding) 흰색 배경을 그릴 좌표를 계산합니다.
+            padding = 5  # 텍스트 주변의 흰색 여백
+            bg_x1 = (qr_position[0] + qr_img.width / 2) + label_bbox[0] - padding
+            bg_y1 = (qr_position[1] + qr_img.height + 10) + label_bbox[1] - padding
+            bg_x2 = (qr_position[0] + qr_img.width / 2) + label_bbox[2] + padding
+            bg_y2 = (qr_position[1] + qr_img.height + 10) + label_bbox[3] + padding
+
+            # 4. 계산된 위치에 '글씨 배경용' 흰색 사각형을 먼저 그립니다.
+            draw.rectangle([bg_x1, bg_y1, bg_x2, bg_y2], fill="white")
+
+            # 5. 방금 그린 흰색 사각형 위에 '오시는 길 (QR)' 텍스트를 그립니다.
             draw.text(
                 (qr_position[0] + qr_img.width / 2, qr_position[1] + qr_img.height + 10),
-                "오시는 길 (QR)", font=font_small, fill=text_color, anchor="mt"
+                text_label, 
+                font=font_small, 
+                fill=text_color, 
+                anchor="mt"
             )
         # 5. 완성된 이미지를 메모리상의 바이트 데이터로 변환
         img_byte_arr = io.BytesIO()
@@ -179,7 +209,8 @@ def create_obituary_document(event_data: ObituaryDataCreated, blob_service_clien
         
         # 6. Azure에 업로드
         doc_id = event_data.obituaryId
-        blob_name = f"obituaries/obituary_{doc_id}.png"
+        time_stamp = datetime.now(timezone.utc).strftime('%Y%m%d%H%M%S')
+        blob_name = f"obituaries/obituary_{doc_id}_{time_stamp}.png"
         file_url = upload_to_blob(blob_service_client, container_name, blob_name, file_data)
 
         if file_url:
