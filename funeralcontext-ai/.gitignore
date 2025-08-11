@@ -15,7 +15,3 @@ env/
 # IDE / Editor
 .idea/
 .vscode/
-
-# 로그 및 데이터 파일
-*.log
-*.csv

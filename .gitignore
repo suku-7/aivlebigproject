@@ -1,5 +1,9 @@
-# IDE / Editor Settings
-.vscode/
-
 # Environment Variables
 .env
+
+# Local Maven Repository & Temp Files
+maven-repo/
+**/resolver-status.properties
+**/_remote.repositories
+*.jar
+*.sha1
