@@ -33,7 +33,7 @@ except Exception as e:
     print(f"❌ Azure Blob Storage 연결 실패: {e}", flush=True)
 
 ################################
-KAFKA_BROKER_URL = "kafka:9092"
+KAFKA_BROKER_URL = "my-kafka:9092"
 TOPIC_NAME = "aivlebigproject"
 
 consumer = KafkaConsumer(
